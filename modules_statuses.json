@@ -1,0 +1,8 @@
+{
+    "Demo": true,
+    "User": true,
+    "Admin": true,
+    "Oauth": true,
+    "Test": true,
+    "Es": true
+}

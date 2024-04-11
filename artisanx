@@ -1,0 +1,400 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+$app      = require_once __DIR__ . '/bootstrap/app.php';
+$kernel   = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$response = $kernel->handle($request = Illuminate\Http\Request::capture());
+
+
+$mysql = config('database.connections.mysql');
+
+$opt = [
+    'debug'           => false,//默认关闭直接生成模板. 所以demo只生成注释模板,需要取消注释.
+    'auto_multi_app'  => false, //默认关闭多应用模式, 路由目录在根目录, 开启会把路由目录写在模块里.
+    'driver'          => 'mysql',
+    'host'            => $mysql["host"], 'port' => $mysql["port"],
+    'database'        => $mysql["database"], 'prefix' => $mysql["prefix"],
+    'username'        => $mysql["username"], 'password' => $mysql["password"],
+    'root_path'       => base_path() . '\\' . env('MUI_ROOT_PATH', ''), //代码生成目录,同级必须存在demo模板 供自动复制
+    'test_path'       => base_path() . '\\' . env('MUI_TEST_PATH', 'test' . '\\' . ''), //测试代码生成目录,同级必须存在demo测试模板 供自动复制
+    'code_block'      => ['c', 'u', 'r', 'd', 'bc', 'bu', 'br', 'bd', 'cj', 'cmd',], //默认生成代码块: c,u,r,d,bc,bu,bd = 增,改,读,删,批增,批改,批读,批删,增队列,指令`
+    'code_block_curr' => [] //指定生成代码块
+];
+
+use Extend\Artisanx\Artisanx;
+
+$artisanx = new Artisanx($opt);
+
+//控制台逻辑
+switch ($argv[1]) {
+    default :
+        return false;
+        break;
+    case "module:make":
+        if ($argv[2]) {
+            $moduleName = $argv[2];
+            $folders    = [
+                'Providers', 'Config', 'Enums', 'Exceptions', 'Consoles', 'Routes',
+                'Http\\Controllers', 'Http\\Requests', 'Http\\Transformers', 'Http\\Logics', 'Services', 'Repositories', 'Models'
+            ];
+            $artisanx->makeFolderByArr($moduleName, $folders, 1);
+        }
+        break;
+    case "module:base":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $codeBlockStr = $argv[4] ?? '';
+        //指定生成代码块
+        $artisanx->setCodeBlockCurr($codeBlockStr);
+
+        $folders = [
+            'Providers', 'Config', 'Enums', 'Exceptions', 'Consoles', 'Routes',
+            'Http\\Controllers', 'Http\\Requests', 'Http\\Transformers', 'Http\\Logics', 'Services', 'Repositories', 'Models'
+        ];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setDocFile($moduleName, $childName);
+        $artisanx->setEnumFile($moduleName, $childName);
+        $artisanx->setExceptionFile($moduleName, $childName);
+
+        $artisanx->setControllerFile($moduleName, $childName);
+        $artisanx->setRequestFile($moduleName, $childName);
+        $artisanx->setLogicFile($moduleName, $childName);
+        $artisanx->setTransformerFile($moduleName, $childName);
+
+        $result = $artisanx->setServiceFile($moduleName, $childName);
+        //$artisanx->setModelFile($moduleName, $childName);
+        //$artisanx->setRepositoryFile($moduleName, $childName);
+
+        if ($result) {
+            $msg = "Module:Base " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+    case "module:base-on":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        //指定生成代码块
+        $codeBlockStr = $argv[4] ?? '';
+
+        //数据库配置
+        $dbOptStr = null;
+        if (isset($argv[5])) {
+            $dbOptStr = $argv[5] ?? 'database';
+        }
+        if (isset($argv[6])) {
+            $opt['prefix'] = $argv[6];
+            $artisanx      = new Artisanx($opt);
+        }
+
+        //指定生成代码块
+        $artisanx->setCodeBlockCurr($codeBlockStr);
+
+        $folders = [
+            'Providers', 'Config', 'Enums', 'Exceptions', 'Consoles', 'Routes',
+            'Http\\Controllers', 'Http\\Requests', 'Http\\Transformers', 'Http\\Logics', 'Services', 'Repositories', 'Models'
+        ];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setApiRoute($moduleName, $childName);
+        $artisanx->setRouteProviderFile($moduleName, $childName);
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setDocFile($moduleName, $childName);
+        $artisanx->setEnumFile($moduleName, $childName, 1);
+        $artisanx->setExceptionFile($moduleName, $childName, 1);
+
+        $artisanx->setControllerFile($moduleName, $childName, 1);
+        $artisanx->setRequestFile($moduleName, $childName, 1, $dbOptStr);
+        $artisanx->setLogicFile($moduleName, $childName, 1, $dbOptStr);
+        $artisanx->setTransformerFile($moduleName, $childName, 1, $dbOptStr);
+
+        $artisanx->setServiceFile($moduleName, $childName, 1, $dbOptStr);
+        $artisanx->setModelFile($moduleName, $childName, 1, $dbOptStr);
+        $result = $artisanx->setRepositoryFile($moduleName, $childName, 1, $dbOptStr);
+
+        if ($result) {
+            $msg = "Module:Base " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "module:job":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $folders = ['Providers', 'Config', 'Enums', 'Exceptions', 'Jobs', 'Http\\Logics', 'Services'];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setEnumFile($moduleName, $childName);
+        $artisanx->setExceptionFile($moduleName, $childName);
+
+        $artisanx->setJobFile($moduleName, $childName);
+        $artisanx->setLogicFile($moduleName, $childName);
+
+        $result = $artisanx->setServiceFile($moduleName, $childName);
+
+        if ($result) {
+            $msg = "Module:Job " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "module:job-on":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $dbOptStr = null;
+        if (isset($argv[4])) {
+            $dbOptStr = $argv[4] ?? 'database';
+        }
+        if (isset($argv[5])) {
+            $opt['prefix'] = $argv[5];
+            $artisanx      = new Artisanx($opt);
+        }
+
+        $folders = ['Providers', 'Config', 'Enums', 'Exceptions', 'Jobs', 'Http\\Logics', 'Services', 'Repositories', 'Models'];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setEnumFile($moduleName, $childName, 1);
+        $artisanx->setExceptionFile($moduleName, $childName, 1);
+
+        $artisanx->setJobFile($moduleName, $childName, 1);
+        $artisanx->setLogicFile($moduleName, $childName, 1);
+
+        $artisanx->setServiceFile($moduleName, $childName, 1);
+        $artisanx->setModelFile($moduleName, $childName, 1, $dbOptStr);
+        $result = $artisanx->setRepositoryFile($moduleName, $childName, 1, $dbOptStr);
+
+        if ($result) {
+            $msg = "Module:Job " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "module:cmd":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $folders = ['Providers', 'Config', 'Enums', 'Exceptions', 'Consoles', 'Http\\Logics', 'Services'];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setEnumFile($moduleName, $childName);
+        $artisanx->setExceptionFile($moduleName, $childName);
+
+        $artisanx->setCmdFile($moduleName, $childName);
+        $artisanx->setLogicFile($moduleName, $childName);
+
+        $result = $artisanx->setServiceFile($moduleName, $childName);
+
+        if ($result) {
+            $msg = "Module:Cmd " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "module:cmd-on":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $dbOptStr = null;
+        if (isset($argv[4])) {
+            $dbOptStr = $argv[4] ?? 'database';
+        }
+        if (isset($argv[5])) {
+            $opt['prefix'] = $argv[5];
+            $artisanx      = new Artisanx($opt);
+        }
+
+        $folders = ['Providers', 'Config', 'Enums', 'Exceptions', 'Consoles', 'Http\\Logics', 'Services', 'Repositories', 'Models'];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setEnumFile($moduleName, $childName, 1);
+        $artisanx->setExceptionFile($moduleName, $childName, 1);
+
+        $artisanx->setCmdFile($moduleName, $childName, 1);
+        $artisanx->setLogicFile($moduleName, $childName, 1);
+
+        $artisanx->setServiceFile($moduleName, $childName, 1);
+        $artisanx->setModelFile($moduleName, $childName, 1, $dbOptStr);
+        $result = $artisanx->setRepositoryFile($moduleName, $childName, 1, $dbOptStr);
+
+        if ($result) {
+            $msg = "Module:Cmd " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "module:model":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $folders = ['Providers', 'Config', 'Enums', 'Exceptions', 'Repositories', 'Models'];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setEnumFile($moduleName, $childName);
+        $artisanx->setExceptionFile($moduleName, $childName);
+
+        $artisanx->setModelFile($moduleName, $childName);
+        $result = $artisanx->setRepositoryFile($moduleName, $childName);
+
+        if ($result) {
+            $msg = "Module:Model " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "module:model-on":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $dbOptStr = null;
+        if (isset($argv[4])) {
+            $dbOptStr = $argv[4] ?? 'database';
+        }
+        if (isset($argv[5])) {
+            $opt['prefix'] = $argv[5];
+            $artisanx      = new Artisanx($opt);
+        }
+
+        $folders = ['Providers', 'Config', 'Enums', 'Exceptions', 'Repositories', 'Models'];
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        $artisanx->setEnumFile($moduleName, $childName, 1);
+        $artisanx->setExceptionFile($moduleName, $childName, 1);
+
+        $artisanx->setModelFile($moduleName, $childName, 1, $dbOptStr);
+        $result = $artisanx->setRepositoryFile($moduleName, $childName, 1, $dbOptStr);
+
+        if ($result) {
+            $msg = "Module:Model-On " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+
+    case "module:route":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $folders = ['Providers', 'Routes'];
+
+        $artisanx->makeFolderByArr($moduleName, $folders);
+
+        $result = $artisanx->setApiRoute($moduleName, $childName);
+        $artisanx->setRouteProviderFile($moduleName, $childName);
+
+        $artisanx->setModuleProviderFile($moduleName, $childName);
+        $artisanx->setModuleJsonFile($moduleName, $childName);
+
+        if ($result) {
+            $msg = "Module:Route " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "module:model-fields":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $dbOptStr = null;
+        if (isset($argv[4])) {
+            $dbOptStr = $argv[4] ?? 'database';
+        }
+        if (isset($argv[5])) {
+            $opt['prefix'] = $argv[5];
+            $artisanx      = new Artisanx($opt);
+        }
+
+        $result = $artisanx->changeModelFields($moduleName, $childName, $dbOptStr);
+        if ($result) {
+            $msg = "Module:Model-UpFields " . $moduleName . " updated successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+    case "module:trans-fields":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $dbOptStr = null;
+        if (isset($argv[4])) {
+            $dbOptStr = $argv[4] ?? 'database';
+        }
+        if (isset($argv[5])) {
+            $opt['prefix'] = $argv[5];
+            $artisanx      = new Artisanx($opt);
+        }
+
+        $result = $artisanx->changeTransformerFields($moduleName, $childName, $dbOptStr);
+        if ($result) {
+            $msg = "Module:Trans-UpFields " . $moduleName . " updated successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+    case "test:make":
+        if ($argv[2]) {
+            $moduleName = $argv[2];
+            $artisanx->makeTestFolder($moduleName, 1);
+        }
+        break;
+    case "test:base":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $artisanx->makeTestFolder($moduleName);
+        $result = $artisanx->setTestFile($moduleName, $childName);
+
+        if ($result) {
+            $msg = "TestModule: " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+    case "test:base-on":
+        $moduleName = $argv[3];
+        $childName  = ucwords($argv[2]);
+
+        $dbOptStr = null;
+        if (isset($argv[4])) {
+            $dbOptStr = $argv[4] ?? 'database';
+        }
+        if (isset($argv[5])) {
+            $opt['prefix'] = $argv[5];
+            $artisanx      = new Artisanx($opt);
+        }
+
+        $artisanx->makeTestFolder($moduleName);
+        $result = $artisanx->setTestFile($moduleName, $childName, 1, $dbOptStr);
+
+        if ($result) {
+            $msg = "TestModule: " . $moduleName . " created successfully";
+            $artisanx->console($msg, "yellow");
+        }
+        break;
+
+}
