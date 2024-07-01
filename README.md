@@ -1,5 +1,14 @@
-### 项目架构
+# Laravel-module-5.7-领域设计版本
+
+___
+## 项目信息
+
+### 原始项目路径: https://dencit.coding.net/public/php-framework/lv57-ddd/git/files
+### 作者: Dencit - 陈鸿扬
+### 邮箱: 632112883@qq.com
+
 ---
+### 项目架构
 
 ~~~
 modules 根目录
@@ -65,8 +74,8 @@ Demo 模块目录内 代码调用顺序
 
 ~~~
 
-### 项目目录
 ---
+### 项目目录
 
 > 数据迁移工具
 ~~~
