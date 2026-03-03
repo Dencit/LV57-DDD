@@ -30,7 +30,7 @@ class ApiCache
      */
     public static function makeHKeyByClassMethod($classAndMethod)
     {
-        $hKey = config("redis.store.prefix") . '_api_cache:' . implode("_", (explode('\\', $classAndMethod)));
+        $hKey = config("cache.stores.redis.prefix") . 'api_cache:' . implode("_", (explode('\\', $classAndMethod)));
         return $hKey;
     }
 

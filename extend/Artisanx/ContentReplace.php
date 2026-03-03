@@ -82,25 +82,28 @@ class ContentReplace
 
     public function forRouteName(&$content)
     {
-        $moduleName = $this->moduleName;
-        $childName = $this->childName;
+        $moduleName     = $this->moduleName;
+        $childName      = $this->childName;
         $moduleDemoName = $this->moduleDemoName;
-        $childDemoName = $this->childDemoName;
+        $childDemoName  = $this->childDemoName;
 
         //替换模块字符
         $content = str_replace($moduleDemoName, $moduleName, $content);
         //替换模块小写字符
-        $content = str_replace(strtolower($moduleDemoName) , strtolower($moduleName) , $content);
+        $content = str_replace(strtolower($moduleDemoName), strtolower($moduleName), $content);
 
         //替换模板字符
         $content = str_replace($childDemoName, $childName, $content);
         //替换模板小写字符
-        $content = str_replace(strtolower($childDemoName) , strtolower($childName) , $content);
+        $content = str_replace(strtolower($childDemoName), strtolower($childName), $content);
 
         //过滤以上替换结果中,模块和路由名重复部分.
         $childNameRep = str_replace(strtolower($moduleName), '', strtolower($childName));
-        if( empty($childNameRep) ){ $content = str_replace('/' . strtolower($childName), '', $content); }
-        else{ $content = str_replace('/' . strtolower($childName), '/' . $childNameRep, $content); }
+        if (empty($childNameRep)) {
+            $content = str_replace('/' . strtolower($childName), '', $content);
+        } else {
+            $content = str_replace('/' . strtolower($childName), '/' . $childNameRep, $content);
+        }
 
         $content = str_replace(strtolower($childDemoName), $this->childNameDashFilter($childName), $content);
     }

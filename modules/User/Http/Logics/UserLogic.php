@@ -5,6 +5,7 @@ namespace Modules\User\Http\Logics;
 use Extend\Util\QueryMatch;
 use Illuminate\Support\Facades\DB;
 use Modules\Base\Exception\Exception;
+use Modules\Base\Logic\BaseLogic;
 use Modules\Base\Service\BaseService;
 use Modules\Oauth\Repositories\OauthClientRepo;
 use Modules\Oauth\Repositories\OauthRoleRepo;
@@ -17,7 +18,7 @@ use Modules\User\Repositories\UserRepo;
  * 说明: 业务类数据操作,一般不直接调用模型,通过仓储类提供存粹的数据执行函数, 跨 应用端/模块 操作同一数据类型的业务, 建议抽象到 领域层-业务类, 减少冗余.
  * 调用原则: 向下调用[仓储类,领域层-业务类]
  */
-class UserLogic extends BaseService
+class UserLogic extends BaseLogic
 {
 
     /*

@@ -221,7 +221,7 @@ class BaseModel extends Model
 
         //检查 _where_in表达式 是否合法
         if (!is_array($item)) {
-            Exception::App(BaseError::code('WHERE_IN_SEARCH_OPERATOR_FAIL'), BaseError::msg('WHERE_IN_SEARCH_OPERATOR_FAIL'));
+            Exception::app(BaseError::code('WHERE_IN_SEARCH_OPERATOR_FAIL'), BaseError::msg('WHERE_IN_SEARCH_OPERATOR_FAIL'));
         }
 
         return $item;

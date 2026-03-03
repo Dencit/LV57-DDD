@@ -52,7 +52,7 @@ class UserController extends BaseController
         $result = (new UserLogic())->userLogin($requestInput['mobile'], $requestInput);
 
         //输出逻辑控制
-        $result = ApiTrans::update($result);
+        $result = ApiTrans::update($result, UserTrans::class, 'transform');
 
         return ApiTrans::response($result);
     }

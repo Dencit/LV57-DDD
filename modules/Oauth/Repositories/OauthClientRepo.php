@@ -154,7 +154,7 @@ class OauthClientRepo extends BaseRepository
         $field  = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if (!$result) {
-            Exception::App(OauthRootError::code("ID_NOT_FOUND"), OauthRootError::msg("ID_NOT_FOUND"), __METHOD__);
+            Exception::app(OauthRootError::code("ID_NOT_FOUND"), OauthRootError::msg("ID_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }
@@ -167,7 +167,7 @@ class OauthClientRepo extends BaseRepository
         $field  = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if (!$result) {
-            Exception::App(OauthRootError::code("OAUTH_CLIENT_ID_NOT_FOUND"), OauthRootError::msg("OAUTH_CLIENT_ID_NOT_FOUND"), __METHOD__);
+            Exception::app(OauthRootError::code("OAUTH_CLIENT_ID_NOT_FOUND"), OauthRootError::msg("OAUTH_CLIENT_ID_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }
@@ -180,7 +180,7 @@ class OauthClientRepo extends BaseRepository
         $field  = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if ($result) {
-            Exception::App(OauthRootError::code("ID_NOT_UNIQUE"), OauthRootError::msg("ID_NOT_UNIQUE"), __METHOD__);
+            Exception::app(OauthRootError::code("ID_NOT_UNIQUE"), OauthRootError::msg("ID_NOT_UNIQUE"), __METHOD__);
         };
         return $result;
     }
@@ -193,7 +193,7 @@ class OauthClientRepo extends BaseRepository
         $field  = array_unique(array_merge($field, array_keys($where)));
         $result = self::$query->select($field)->whereIn('id', $ids)->get();
         if (count($ids) != count($result)) {
-            Exception::App(OauthRootError::code("BATCH_IDS_NOT_FOUND"), OauthRootError::msg("BATCH_IDS_NOT_FOUND"), __METHOD__);
+            Exception::app(OauthRootError::code("BATCH_IDS_NOT_FOUND"), OauthRootError::msg("BATCH_IDS_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }

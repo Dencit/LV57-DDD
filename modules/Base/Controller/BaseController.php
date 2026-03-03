@@ -32,7 +32,7 @@ class BaseController extends Controller
     //批处理闭包
     protected function batchDone($batchData,\Closure $closure){
         foreach ($batchData as $ind=>$item){
-            if( is_string($item) ){ Exception::App(BaseError::code('WRONG_BATCH_DATA'),BaseError::msg('WRONG_BATCH_DATA')); }
+            if( is_string($item) ){ Exception::app(BaseError::code('WRONG_BATCH_DATA'),BaseError::msg('WRONG_BATCH_DATA')); }
             $closure($item);
         }
     }

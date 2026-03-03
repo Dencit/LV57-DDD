@@ -203,7 +203,7 @@ class AdminController extends BaseController
 
         //不能自己删除自己
         if ($adminId == $id) {
-            Exception::App(AdminRootError::code("DON_DELETE_YOU_SELF"), AdminRootError::msg("DON_DELETE_YOU_SELF"), __METHOD__);
+            Exception::app(AdminRootError::code("DON_DELETE_YOU_SELF"), AdminRootError::msg("DON_DELETE_YOU_SELF"), __METHOD__);
         }
 
         //业务逻辑控制

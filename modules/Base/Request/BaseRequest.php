@@ -49,7 +49,7 @@ class BaseRequest
         $sceneMethodName = 'scene' . ucwords($this->toHumpName($sceneStr));
         $methodExits     = method_exists($this, $sceneMethodName);
         if (!$methodExits) {
-            Exception::App(BaseError::code('SCENE_VALIDATE_PARAM_FAIL'), BaseError::msg('SCENE_VALIDATE_PARAM_FAIL'));
+            Exception::app(BaseError::code('SCENE_VALIDATE_PARAM_FAIL'), BaseError::msg('SCENE_VALIDATE_PARAM_FAIL'));
         }
         $this->{$sceneMethodName}(); //触发相应场景函数 补充验证条件
         $newRules = $this->sceneRules;

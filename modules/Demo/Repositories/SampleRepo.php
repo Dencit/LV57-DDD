@@ -160,7 +160,7 @@ class SampleRepo extends BaseRepository
         $field = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if (!$result) {
-            Exception::App(DemoRootError::code("ID_NOT_FOUND"), DemoRootError::msg("ID_NOT_FOUND"), __METHOD__);
+            Exception::app(DemoRootError::code("ID_NOT_FOUND"), DemoRootError::msg("ID_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }
@@ -173,7 +173,7 @@ class SampleRepo extends BaseRepository
         $field = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if ($result) {
-            Exception::App(DemoRootError::code("ID_NOT_UNIQUE"), DemoRootError::msg("ID_NOT_UNIQUE"), __METHOD__);
+            Exception::app(DemoRootError::code("ID_NOT_UNIQUE"), DemoRootError::msg("ID_NOT_UNIQUE"), __METHOD__);
         };
         return $result;
     }
@@ -186,7 +186,7 @@ class SampleRepo extends BaseRepository
         $field = array_unique(array_merge($field, array_keys($where)));
         $result = self::$query->select($field)->whereIn('id', $ids)->get();
         if (count($ids) != count($result)) {
-            Exception::App(DemoRootError::code("BATCH_IDS_NOT_FOUND"), DemoRootError::msg("BATCH_IDS_NOT_FOUND"), __METHOD__);
+            Exception::app(DemoRootError::code("BATCH_IDS_NOT_FOUND"), DemoRootError::msg("BATCH_IDS_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }

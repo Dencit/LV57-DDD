@@ -154,7 +154,7 @@ class AdminRepo extends BaseRepository
         $field  = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if (!$result) {
-            Exception::App(AdminRootError::code("ID_NOT_FOUND"), AdminRootError::msg("ID_NOT_FOUND"), __METHOD__);
+            Exception::app(AdminRootError::code("ID_NOT_FOUND"), AdminRootError::msg("ID_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }
@@ -167,7 +167,7 @@ class AdminRepo extends BaseRepository
         $field  = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if (!$result) {
-            Exception::App(AdminRootError::code("MOBILE_NOT_FOUND"), AdminRootError::msg("MOBILE_NOT_FOUND"), __METHOD__);
+            Exception::app(AdminRootError::code("MOBILE_NOT_FOUND"), AdminRootError::msg("MOBILE_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }
@@ -180,7 +180,7 @@ class AdminRepo extends BaseRepository
         $field  = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if ($result) {
-            Exception::App(AdminRootError::code("ID_NOT_UNIQUE"), AdminRootError::msg("ID_NOT_UNIQUE"), __METHOD__);
+            Exception::app(AdminRootError::code("ID_NOT_UNIQUE"), AdminRootError::msg("ID_NOT_UNIQUE"), __METHOD__);
         };
         return $result;
     }
@@ -193,7 +193,7 @@ class AdminRepo extends BaseRepository
         $field  = array_merge($field, array_keys($where));
         $result = self::$query->select($field)->where($where)->first();
         if ($result) {
-            Exception::App(AdminRootError::code("MOBILE_NOT_UNIQUE"), AdminRootError::msg("MOBILE_NOT_UNIQUE"), __METHOD__);
+            Exception::app(AdminRootError::code("MOBILE_NOT_UNIQUE"), AdminRootError::msg("MOBILE_NOT_UNIQUE"), __METHOD__);
         };
         return $result;
     }
@@ -206,7 +206,7 @@ class AdminRepo extends BaseRepository
         $field  = array_unique(array_merge($field, array_keys($where)));
         $result = self::$query->select($field)->whereIn('id', $ids)->get();
         if (count($ids) != count($result)) {
-            Exception::App(AdminRootError::code("BATCH_IDS_NOT_FOUND"), AdminRootError::msg("BATCH_IDS_NOT_FOUND"), __METHOD__);
+            Exception::app(AdminRootError::code("BATCH_IDS_NOT_FOUND"), AdminRootError::msg("BATCH_IDS_NOT_FOUND"), __METHOD__);
         };
         return $result;
     }
